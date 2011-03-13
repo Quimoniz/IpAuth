@@ -1,0 +1,3 @@
+name: IpAuth
+main: org.quimoniz.ipauth.IpAuth
+version: 0.01
