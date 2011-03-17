@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Authentication</title>
+<link rel="icon" type="image/png" href="http://192.0.2.0/favicon.ico" />
+<style type="text/css">
+body {
+  text-align:center;
+}
+div.content_wrapper {
+  width:350px;
+  margin:0px auto;
+  text-align:left;
+}
+input {
+  float:right;
+}
+label.caption {
+  float:left;
+}
+div.footer {
+  font-size:90%;
+  color:#808080;
+}
+div.footer a:link, div.footer a:visited{
+  color:#6060D8;
+}
+</style>
+</head>
+<body>
+<div class="page_wrapper">
+<div class="content_wrapper"><form method="POST" action="/login/">
+<fieldset>
+<legend>Authentification</legend>
+<label class="caption" for="user">User:</label><input type="text" name="user" size="30"/><br/>
+<label class="caption" for="password">Password:</label><input type="password" name="password" size="30"/>
+<br/>
+&nbsp;<input type="submit" style="float:right;" />
+</fieldset>
+</form>
+</div>
+<div class="footer">In case of problems write to <a href="mailto:ipauth@resonanzkaska.de">ipauth@resonanzkaska.de</a></div>
+</div>
+</body>
+</html>

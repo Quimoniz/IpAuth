@@ -1,3 +1,7 @@
 name: IpAuth
 main: org.quimoniz.ipauth.IpAuth
 version: 0.01
+commands:
+  regauth:
+    description: Register a password for HTTP Authentification
+    usage: /regauth <password>
