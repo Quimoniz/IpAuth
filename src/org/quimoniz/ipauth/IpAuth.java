@@ -190,10 +190,10 @@ public class IpAuth extends JavaPlugin {
       return false;
   }
   private void setOnlineMode(boolean onlineMode) {
-	((org.bukkit.craftbukkit.CraftServer)this.getServer()).getServer().l = onlineMode;
+	((org.bukkit.craftbukkit.CraftServer)this.getServer()).getServer().onlineMode = onlineMode;
   }
   private boolean getOnlineMode() {
-    return ((org.bukkit.craftbukkit.CraftServer)this.getServer()).getServer().l;
+    return ((org.bukkit.craftbukkit.CraftServer)this.getServer()).getServer().onlineMode;
   }
   private void setPlayerName(Player p, String newName) {
 	  ((org.bukkit.craftbukkit.entity.CraftPlayer) p).getHandle().name = newName;
