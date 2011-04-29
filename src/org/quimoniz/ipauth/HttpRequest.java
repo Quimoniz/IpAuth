@@ -1,3 +1,5 @@
+package org.quimoniz.ipauth;
+
 import java.util.LinkedList;
 
 public class HttpRequest {

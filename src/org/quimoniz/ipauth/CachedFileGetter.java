@@ -3,7 +3,7 @@
 *  If you can tell me how to make it more efficient, please contact me at quimoniz@resonanzkaska.de
 */
 
-
+package org.quimoniz.ipauth;
 
 import java.util.HashMap;
 import java.io.File;
@@ -22,5 +22,14 @@ public class CachedFileGetter {
 	 }
 	 return file.getContents();
    }
-   
+   public static void load(String fileName) {
+	File fileObject = new File(fileName);
+	if(!fileObject.exists() || !fileObject.isFile())
+	  return;
+	CachedFile file = fileList.get(fileName);
+	if(file == null) {
+	  file = new CachedFile(fileObject);
+	  fileList.put(fileName,file);
+	}
+   }
 }

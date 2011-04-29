@@ -1,4 +1,6 @@
-import java.security.MessageDigest;
+package org.quimoniz.ipauth;
+
+import java.io.FileNotFoundException;
 
 public class RequestHandler {
   private HttpRequest request;
@@ -8,17 +10,6 @@ public class RequestHandler {
 	this.con = con;
   }
   public void processRequest(String requestLine) {
-    String loginContent = null, confirmContent = null, failContent = null;
-//	System.out.println(java.util.Arrays.toString(request.getBytes()) + request);
-	try {
-	  loginContent   = CachedFileGetter.getFile("samples/login.html");
-	  confirmContent = CachedFileGetter.getFile("samples/confirm.html");
-	  failContent    = CachedFileGetter.getFile("samples/fail.html");
-	} catch(java.io.FileNotFoundException exc) {
-	  con.log(exc);
-	  con.serverError();
-	  return;
-	}
 	final String sampleHeader = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nPragma: no-cache\r\nCache-Control: no-cache\r\nConnection: Close";
 
      String[] arguments = requestLine.split(" ");
@@ -27,6 +18,14 @@ public class RequestHandler {
 //    System.out.println(java.util.Arrays.toString(request.getHeader()));
 	if(arguments[0].equalsIgnoreCase("GET")) {
 	  if(arguments[1].equalsIgnoreCase("/")) {
+		    String loginContent = null;
+			try {
+			  loginContent   = CachedFileGetter.getFile("samples/login.html");
+			} catch(FileNotFoundException exc) {
+			  con.log(exc);
+			  con.serverError();
+			  return;
+			}
 	    con.httpOutput(sampleHeader,loginContent);
 		con.close();
 	  }
@@ -45,11 +44,28 @@ public class RequestHandler {
 		     password = value;
 		}
 		if(user !=null && password!=null)
-		  if(con.authenticate(user, password))
+		  if(con.authenticate(user, password)) {
+		    String confirmContent = null;
+			try {
+			  confirmContent = CachedFileGetter.getFile("samples/confirm.html");
+			} catch(FileNotFoundException exc) {
+			  con.log(exc);
+			  con.serverError();
+			  return;
+			}
 		    con.httpOutput(sampleHeader, confirmContent);
-		   else
+		  } else {
+		    String failContent = null;
+			try {
+			  failContent    = CachedFileGetter.getFile("samples/fail.html");
+			} catch(FileNotFoundException exc) {
+			  con.log(exc);
+			  con.serverError();
+			  return;
+			}
 		     con.httpOutput(sampleHeader, failContent);
-		con.close();
+		     con.close();
+		  }
 	  }
 	}
   }

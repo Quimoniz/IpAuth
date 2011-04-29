@@ -1,6 +1,8 @@
+package org.quimoniz.ipauth;
+
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,17 +13,19 @@ import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.net.InetSocketAddress;
+import java.net.InetAddress;
 
 public class HttpListener implements Runnable {
   private ServerSocket webSocket = null;
   private boolean isRunning = false;
-  private HashSet<HttpConnection> conList = new HashSet <HttpConnection>();
+  private LinkedList<HttpConnection> conList = new LinkedList <HttpConnection>();
 //  private String properties = "ipauth.properties";
   private String obfuscationMethod = "SHA1";
   private byte[] obfuscationSalt = new byte[] {-46,112,-85,27,-52,-71,-59,112,-24,46,-11,-55,74,13,-13,89,76,-95,-74,-55};
   private final byte[]  HEXCODES = new byte [] {(byte)'0',(byte)'1',(byte)'2',(byte)'3',(byte)'4',(byte)'5',(byte)'6',(byte)'7',(byte)'8',(byte)'9',(byte)'a',(byte)'b',(byte)'c',(byte)'d',(byte)'e',(byte)'f'};
   private MessageDigest obfuscationObject = null;
   private IpAuth plugin;
+  private Thread t = null;
   public HttpListener(int port, IpAuth plugin) {
     this.plugin = plugin;
   	try {
@@ -40,6 +44,9 @@ public class HttpListener implements Runnable {
 	  t.start();
 	}
   }
+  public boolean isBanned(InetAddress address) {
+	return false;
+  }
   @Override public void run() {
     try {
       webSocket.setSoTimeout(200);
@@ -48,7 +55,11 @@ public class HttpListener implements Runnable {
 	}
 	while(isRunning) {
 	  try {
-	    newConnection(webSocket.accept());
+		Socket conObject = webSocket.accept();
+		if(!isBanned(conObject.getInetAddress()))
+		  newConnection(conObject);
+		else
+		  conObject.close();
 	  } catch(SocketTimeoutException exc) {
 	  } catch(IOException exc) {
 	    log(exc);
@@ -86,8 +97,11 @@ public class HttpListener implements Runnable {
 	}
 	return new String(hexOut);
   }
-  public boolean authenticate(String user, String password, InetSocketAddress) {
-    return true;
+  public void conReset(HttpConnection conObject) {
+	conList.remove(conObject);
+  }
+  public boolean authenticate(String user, String password, InetSocketAddress address) {
+    return plugin.authenticate(user, password, address);
   }
   
 }

@@ -1,3 +1,4 @@
+package org.quimoniz.ipauth;
 
 import java.net.Socket;
 import java.io.InputStreamReader;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.BufferOverflowException;
 import java.net.InetSocketAddress;
+import java.net.InetAddress;
 
 public class HttpConnection implements Runnable {
   private HttpListener main;
@@ -45,7 +47,7 @@ public class HttpConnection implements Runnable {
 	log("Initialized Connection with " + obfuscate(myConnection.getInetAddress().getHostAddress()) + ":" + myConnection.getPort());
 	StringBuilder bufString = new StringBuilder();
 	
-	char [] cbuf = new char[BUFLENGTH];
+//	char [] cbuf = new char[BUFLENGTH];
 	long charsRead = 0;
 	int charReadCurrently = 0;
 	int maxInputMs = 3000;
@@ -56,7 +58,7 @@ public class HttpConnection implements Runnable {
 	ByteBuffer bufByte = null;
 	int contentLength = -1;
 	long bytesRead = 0;
-	byte [] bbuf = new byte[BUFLENGTH];
+//	byte [] bbuf = new byte[BUFLENGTH];
 	do {
 //	  charsReadCurrently = inReader.read(cbuf, 0, BUFLENGTH);
       try {
@@ -203,15 +205,12 @@ public class HttpConnection implements Runnable {
 	}
   }
   public boolean isHalted() {
-    if(((int)(Math.random()*40)) == 0)
-      System.out.println("Returning halted state " +  halted);
     return halted;
   }
   public void continueReading() {
     if(isHalted()) {
-	  System.out.println("Attempting to interrupt");
 	  t.interrupt();
-	} else System.out.println("Not halted!");
+	}
   }
   public void log(String line) {
     main.log(line);
@@ -229,7 +228,7 @@ public class HttpConnection implements Runnable {
     return contentBeenRead;
   }
   public boolean authenticate(String user, String password) {
-    return main.authenticate(user, password, new InetSocketAddress(myConnection.getInetAddress().getHostAddress(), myConnection.getPort());
+    return main.authenticate(user, password, new InetSocketAddress(myConnection.getInetAddress().getHostAddress(), myConnection.getPort()));
   }
   public void serverError() {
     try {
@@ -259,6 +258,24 @@ public class HttpConnection implements Runnable {
 	  serverError();
 	}
   }
+  public InetAddress getAddress() {
+	return myConnection.getInetAddress();
+  }
+  public int getPort() {
+	return myConnection.getPort();
+  }
+  @Override public boolean equals(Object o) {
+	HttpConnection con = null;
+	if(o instanceof HttpConnection) {
+	  con = (HttpConnection) o;
+	  if(getAddress().equals(con.getAddress()) && getPort() == con.getPort())
+	    return true;
+	  else
+		return false;
+	} else {
+	  return false;
+	}
+  }
   public void close() {
     isRunning = false;
 	try {
@@ -269,5 +286,6 @@ public class HttpConnection implements Runnable {
 	} catch(IOException exc) {
 	  log(exc);
 	}
+	main.conReset(this);
   }
 }
